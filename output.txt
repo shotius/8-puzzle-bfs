@@ -1,0 +1,7 @@
+initial_state: 0,4,2,1,3,5,6,7,8
+path_to_goal: ['Down', 'Right', 'Up', 'Left']
+cost_of_path: 4
+nodes_expanded: 17
+search_depth: 4
+max_search_depth: 5
+running_time: 0.00104809
