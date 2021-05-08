@@ -67,33 +67,7 @@ def bfs(startState):
                 # axali shesaZlo wveroebisTvis `depth` izrdeba erTiT
                 # da Sesamabisad maqsimarul siRmesad vzrdiT
                 if path.depth > MaxSearchDeep:
-                    MaxSearchDeep = MaxSearchDeep + 1
-
-            
-#DFS**************************************************************
-def dfs(startState):
-
-    global MaxFrontier, GoalNode, MaxSearchDeep
-
-    boardVisited = set()
-    stack = list([PuzzleState(startState, None, None, 0, 0, 0)])
-    while stack:
-        node = stack.pop()
-        boardVisited.add(node.map)
-        if node.state == GoalState:
-            GoalNode = node
-            return stack
-        #inverse the order of next paths for execution porpuses
-        posiblePaths = reversed(subNodes(node))
-        for path in posiblePaths:
-            if path.map not in boardVisited:
-                stack.append(path)
-                boardVisited.add(path.map)
-                if path.depth > MaxSearchDeep:
-                    MaxSearchDeep = 1 + MaxSearchDeep
-        if len(stack) > MaxFrontier:
-            MaxFrontier = len(stack)
-    
+                    MaxSearchDeep = MaxSearchDeep + 1    
 
 #AST**************************************************************
 def ast(startState):
@@ -368,8 +342,6 @@ def main():
     function = args.method
     if(function=="bfs"):
         bfs(InitialState)
-    if(function=="dfs"):
-        dfs(InitialState)  
     if(function=="ast"):
         ast(InitialState) 
 
