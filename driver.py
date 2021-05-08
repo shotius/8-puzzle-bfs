@@ -180,14 +180,17 @@ def subNodes(node):
     return nodes
 
 
+
 #Next step**************************************************************
+# gansazRvos gadaadgilebebi
 def move(state, direction):
-    #generate a copy
+    # gaakeTos mdgomareobis kopireba
     newState = state[:]
-    
-    #obtain poss of 0
+
+    # ipovos nulis pozicia
     index = newState.index(0)
 
+    # da  `direction' cvladis Sesabamisad daabrunos mdgomareoba`
     if(index==0):
         if(direction==1):
             return None
