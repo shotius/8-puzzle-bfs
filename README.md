@@ -1,2 +1,2 @@
 # to run the program 
-python driver.py [InitialState]
+python driver.py [bfs/ast] [InitialState]
