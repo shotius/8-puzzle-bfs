@@ -35,74 +35,140 @@ def bfs(startState):
 
     global MaxFrontier, GoalNode, MaxSearchDeep
 
-    # nanaxi simreavellebis ismravle
-    boardVisited = set()
-    # deki siwyisi mniSvnelobebisTvis
+    boardVisited= set()
     Queue = deque([PuzzleState(startState, None, None, 0, 0, 0)])
 
-    # sanam dekidan ar amoviRebT yvela wveros
     while Queue:
-        # amoviRoT dekis pirveli elementi, mdgomarieba grafis wveroSi
         node = Queue.popleft()
-       
-        # Cavagdot es elementi nanaxi wveroebis simravleSi
         boardVisited.add(node.map)
-       
-        # Tu amoRebuli wveros mdgomareoba saboloo mdgomareobaa
-        # daabrune deki da daamTavre
         if node.state == GoalState:
             GoalNode = node
             return Queue
-
-        # SesaZlo svlebi
         posiblePaths = subNodes(node)
         for path in posiblePaths:
-            # Tu aRmoCenilebSi araa
             if path.map not in boardVisited:
-                # Caamate dekSi
                 Queue.append(path)
-                # da daamate nanax wveroebSi
                 boardVisited.add(path.map)
-                # rodes yvela SesaZlo wvero gamokvleulia `posiblePath`-dan
-                # axali shesaZlo wveroebisTvis `depth` izrdeba erTiT
-                # da Sesamabisad maqsimarul siRmesad vzrdiT
                 if path.depth > MaxSearchDeep:
                     MaxSearchDeep = MaxSearchDeep + 1
+        if len(Queue) > MaxFrontier:
+            QueueSize = len(Queue)
+            MaxFrontier = QueueSize
+            
+#DFS**************************************************************
+def dfs(startState):
+
+    global MaxFrontier, GoalNode, MaxSearchDeep
+
+    boardVisited = set()
+    stack = list([PuzzleState(startState, None, None, 0, 0, 0)])
+    while stack:
+        node = stack.pop()
+        boardVisited.add(node.map)
+        if node.state == GoalState:
+            GoalNode = node
+            return stack
+        #inverse the order of next paths for execution porpuses
+        posiblePaths = reversed(subNodes(node))
+        for path in posiblePaths:
+            if path.map not in boardVisited:
+                stack.append(path)
+                boardVisited.add(path.map)
+                if path.depth > MaxSearchDeep:
+                    MaxSearchDeep = 1 + MaxSearchDeep
+        if len(stack) > MaxFrontier:
+            MaxFrontier = len(stack)
+    
+
+#AST**************************************************************
+def ast(startState):
+    
+    global MaxFrontier, MaxSearchDeep, GoalNode
+    
+    #transform initial state to calculate Heuritic
+    node1 = ""
+    for poss in startState:
+        node1 = node1 + str(poss)
+
+    #calculate Heuristic and set initial node
+    key = Heuristic(node1)
+    boardVisited= set()
+    Queue = []
+    Queue.append(PuzzleState(startState, None, None, 0, 0, key)) 
+    boardVisited.add(node1)
+    
+    while Queue:
+        Queue.sort(key=lambda o: o.key) 
+        node = Queue.pop(0)
+        if node.state == GoalState:
+            GoalNode = node
+            return Queue
+        posiblePaths = subNodes(node)
+        for path in posiblePaths:      
+            thisPath = path.map[:]
+            if thisPath not in boardVisited:
+                key = Heuristic(path.map)
+                path.key = key + path.depth
+                Queue.append(path)               
+                boardVisited.add(path.map[:])
+                if path.depth > MaxSearchDeep:
+                    MaxSearchDeep = 1 + MaxSearchDeep
+        
+        
+#Heuristic: distance to root numbers
+values_0 = [0,1,2,1,2,3,2,3,4]
+values_1 = [1,0,1,2,1,2,3,2,3]
+values_2 = [2,1,0,3,2,1,4,3,2]
+values_3 = [1,2,3,0,1,2,1,2,3]
+values_4 = [2,1,2,1,0,1,2,1,2]
+values_5 = [3,2,1,2,1,0,3,2,1]
+values_6 = [2,3,4,1,2,3,0,1,2]
+values_7 = [3,2,3,2,1,2,1,0,1]
+values_8 = [4,3,2,3,2,1,2,1,0]
+
+def Heuristic(node):
+
+    global values_0,values_1,values_2,values_3,values_4,values_5,values_6,values_7,values_8   
+    v0=values_0[node.index("0")]
+    v1=values_1[node.index("1")]
+    v2=values_2[node.index("2")]
+    v3=values_3[node.index("3")]
+    v4=values_4[node.index("4")]
+    v5=values_5[node.index("5")]
+    v6=values_6[node.index("6")]
+    v7=values_7[node.index("7")]
+    v8=values_8[node.index("8")]
+    valorTotal = v0+v1+v2+v3+v4+v5+v6+v7+v8
+    return valorTotal
+    
         
 
     
 #Obtain Sub Nodes********************************************************
 def subNodes(node):
 
-    global NodesExpanded # gakeTebuli svlebis raodenoba
+    global NodesExpanded
     NodesExpanded = NodesExpanded+1
 
-    # yvela mimartulebis gadasvlis mcdelobebi
     nextPaths = []
     nextPaths.append(PuzzleState(move(node.state, 1), node, 1, node.depth + 1, node.cost + 1, 0))
     nextPaths.append(PuzzleState(move(node.state, 2), node, 2, node.depth + 1, node.cost + 1, 0))
     nextPaths.append(PuzzleState(move(node.state, 3), node, 3, node.depth + 1, node.cost + 1, 0))
     nextPaths.append(PuzzleState(move(node.state, 4), node, 4, node.depth + 1, node.cost + 1, 0))
-    
-    # Tu Sesabamisi mimarTulebiT gadasvla SasaZlebelia
-    # Caamatos Sesabamisi gadasvliT miRebuli mdomareoba masivSi 
     nodes=[]
     for procPaths in nextPaths:
         if(procPaths.state!=None):
             nodes.append(procPaths)
     return nodes
 
-
 #Next step**************************************************************
-# gansazRvos gadaadgilebebi
 def move(state, direction):
-    # gaakeTos mdgomareobis kopireba
+    #generate a copy
     newState = state[:]
-
-    # ipovos nulis pozicia
+    
+    #obtain poss of 0
     index = newState.index(0)
 
-    # da  `direction' cvladis Sesabamisad daabrunos mdgomareoba`
     if(index==0):
         if(direction==1):
             return None
@@ -247,22 +313,22 @@ def main():
 
     global GoalNode
 
-    #  # User input for initial state 
-    # InitialState = []
-    # print("-Input numbers from 0-8 for initial state ")
-    # for i in range(0,9):
-    #     print('')
-    #     x = int(input("enter vals :"))
-    #     InitialState.append(x)
-
-  
-    # argumentebis wakiTxva inputidan
+    #a = [1,8,2,3,4,5,6,7,0]
+    #point=Heuristic(a)
+    #print(point)
+    #return
+    
+    #info = "6,1,8,4,0,2,7,3,5" #20
+    #info = "8,6,4,2,1,3,5,7,0" #26
+    
+    #Obtain information from calling parameters
     parser = argparse.ArgumentParser()
+    parser.add_argument('method')
     parser.add_argument('initialBoard')
     args = parser.parse_args()
     data = args.initialBoard.split(",")
 
-    # initial state - is ageba
+    #Build initial board state
     InitialState = []
     InitialState.append(int(data[0]))
     InitialState.append(int(data[1]))
@@ -274,54 +340,61 @@ def main():
     InitialState.append(int(data[7]))
     InitialState.append(int(data[8]))
 
-    # dro operaciis dawyebisas
+    #Start operation
     start = timeit.default_timer()
 
-    # bfs algoriTmi
-    bfs(InitialState)
+    function = args.method
+    if(function=="bfs"):
+        bfs(InitialState)
+    if(function=="dfs"):
+        dfs(InitialState)  
+    if(function=="ast"):
+        ast(InitialState) 
 
-    # gaCerebis dro
     stop = timeit.default_timer()
     time = stop-start
 
-    # maqsimaluri siRrme
-    deep=GoalNode.depth
-    moves = []
-    while InitialState != GoalNode.state:
-        if GoalNode.move == 1:
-            path = 'Up'
-        if GoalNode.move == 2:
-            path = 'Down'
-        if GoalNode.move == 3:
-            path = 'Left'
-        if GoalNode.move == 4:
-            path = 'Right'
-        moves.insert(0, path)
-        # ava mSobel mdgomareobaSi 
-        GoalNode = GoalNode.parent
+    if GoalNode:
+        #Save total path result
+        deep=GoalNode.depth
+    
+        moves = []
+        while InitialState != GoalNode.state:
+            if GoalNode.move == 1:
+                path = 'Up'
+            if GoalNode.move == 2:
+                path = 'Down'
+            if GoalNode.move == 3:
+                path = 'Left'
+            if GoalNode.move == 4:
+                path = 'Right'
+            moves.insert(0, path)
+            GoalNode = GoalNode.parent
 
-    #'''
-    #Print results
-    print("path: ",moves)
-    print("cost: ",len(moves))
-    print("nodes expanded: ",str(NodesExpanded))
-    print("search_depth: ",str(deep))
-    print("MaxSearchDeep: ",str(MaxSearchDeep))
-    print("running_time: ",format(time, '.8f'))
-    #'''
+        #'''
+        #Print results
+        print("path: ",moves)
+        print("cost: ",len(moves))
+        print("nodes expanded: ",str(NodesExpanded))
+        print("search_depth: ",str(deep))
+        print("MaxSearchDeep: ",str(MaxSearchDeep))
+        print("running_time: ",format(time, '.8f'))
+        #'''
 
-    #Generate output document for grade system
-    #'''
-    file = open('output.txt', 'w')
-    file.write("initial_state: " + args.initialBoard + "\n")
-    file.write("path_to_goal: " + str(moves) + "\n")
-    file.write("cost_of_path: " + str(len(moves)) + "\n")
-    file.write("nodes_expanded: " + str(NodesExpanded) + "\n")
-    file.write("search_depth: " + str(deep) + "\n")
-    file.write("max_search_depth: " + str(MaxSearchDeep) + "\n")
-    file.write("running_time: " + format(time, '.8f') + "\n")
-    file.close()
-    #'''
+        #Generate output document for grade system
+        #'''
+        file = open('output.txt', 'w')
+        file.write("path_to_goal: " + str(moves) + "\n")
+        file.write("cost_of_path: " + str(len(moves)) + "\n")
+        file.write("nodes_expanded: " + str(NodesExpanded) + "\n")
+        file.write("search_depth: " + str(deep) + "\n")
+        file.write("max_search_depth: " + str(MaxSearchDeep) + "\n")
+        file.write("running_time: " + format(time, '.8f') + "\n")
+        file.close()
+        #'''
+    else:
+        print("note found")
+
 
 if __name__ == '__main__':
     main()

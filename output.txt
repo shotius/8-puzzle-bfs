@@ -1,7 +1,6 @@
-initial_state: 0,4,2,1,3,5,6,7,8
-path_to_goal: ['Down', 'Right', 'Up', 'Left']
-cost_of_path: 4
-nodes_expanded: 17
-search_depth: 4
-max_search_depth: 5
-running_time: 0.00104809
+path_to_goal: ['Left', 'Up', 'Right', 'Right', 'Down', 'Left', 'Up', 'Left', 'Down', 'Right', 'Right', 'Up', 'Left', 'Left']
+cost_of_path: 14
+nodes_expanded: 143
+search_depth: 14
+max_search_depth: 14
+running_time: 0.00343299
