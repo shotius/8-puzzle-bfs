@@ -35,34 +35,36 @@ def bfs(startState):
 
     global MaxFrontier, GoalNode, MaxSearchDeep
 
-    # nanaxi simreavellebis ismravle
-    boardVisited = set()
-    # deki siwyisi mniSvnelobebisTvis
+    # დახურული სიმრავლის ინიციალიზაცია
+    listClosed  = set()
+    # რიგის ინიციალიზაცია
     Queue = deque([PuzzleState(startState, None, None, 0, 0, 0)])
 
-    # sanam dekidan ar amoviRebT yvela wveros
+    # სანამ რიგიდან არ გამოვა ყველა მონაცემი
     while Queue:
-        # amoviRoT dekis pirveli elementi, mdgomarieba grafis wveroSi
+        # ვიღებთ რიგის პირველ ელემენტს
         node = Queue.popleft()
        
         # Cavagdot es elementi nanaxi wveroebis simravleSi
-        boardVisited.add(node.map)
+        # ვინახავთ მას დახურულ სიაში
+        listClosed.add(node.map)
        
-        # Tu amoRebuli wveros mdgomareoba saboloo mdgomareobaa
-        # daabrune deki da daamTavre
+        # თუ ამოღებული წვეროს მდგომარებოა საბოლოო მდგომარეობა
+        # დააბრუნე რიგი და დაამთავრე
         if node.state == GoalState:
             GoalNode = node
             return Queue
 
-        # SesaZlo svlebi
+        # შესაძლო სვლების დადგენა
         posiblePaths = subNodes(node)
+        # გასინჯე ყველა შესაძლო გადასვლაზე მდგომი წვერო
         for path in posiblePaths:
-            # Tu aRmoCenilebSi araa
-            if path.map not in boardVisited:
-                # Caamate dekSi
+            # თუ წვერო არაა დახურულ სიაში 
+            if path.map not in listClosed :
+                # ჩაამატე რიგში
                 Queue.append(path)
                 # da daamate nanax wveroebSi
-                boardVisited.add(path.map)
+                listClosed .add(path.map)
                 # rodes yvela SesaZlo wvero gamokvleulia `posiblePath`-dan
                 # axali shesaZlo wveroebisTvis `depth` izrdeba erTiT
                 # da Sesamabisad maqsimarul siRmesad vzrdiT
@@ -74,32 +76,45 @@ def ast(startState):
     
     global MaxFrontier, MaxSearchDeep, GoalNode
     
-    #transform initial state to calculate Heuritic
+    # გარდავქმნათ საწყისი მდგომარეობა ევრისტყული ფუნქციისთვის
     node1 = ""
     for poss in startState:
         node1 = node1 + str(poss)
 
-    #calculate Heuristic and set initial node
+    # გამოვთვალოთ ევრისტიკული ფუნქცია და დავნიშნოთ საწყისი წვერო
     key = Heuristic(node1)
-    boardVisited= set()
+    # შეიქნა დახურული სიმრავლე რიგი და რიქში პირველი შედის საწყისი მნიშვნელობა
+    listClosed = set()
     Queue = []
     Queue.append(PuzzleState(startState, None, None, 0, 0, key)) 
-    boardVisited.add(node1)
+    # დახურულ სიაში შედის საწყისი წვერო
+    listClosed .add(node1)
     
     while Queue:
+        # რიგის სორტირება ხდება ევრისტიკური ფუნქციის მნიშვნელობის მიხედვით
         Queue.sort(key=lambda o: o.key) 
+        # ვიღებთ წვეროს და ვამოწმებთ არის თუ არა ის საბოლოო მდგომარება
         node = Queue.pop(0)
         if node.state == GoalState:
             GoalNode = node
             return Queue
+        # ვარკვევთ ყველა შესაძლო გადაადგილებებს
         posiblePaths = subNodes(node)
+        # ვამოწმებთ ყველა შესაძლო გადაადგილებას
         for path in posiblePaths:      
+            # გარდავქმნათ შესაბამის მონაცემად string
             thisPath = path.map[:]
-            if thisPath not in boardVisited:
+            # შევამოწმოთ თუ შეტანილია უკვე დახურულ სიაში 
+            if thisPath not in listClosed :
+                # გამოვთვალოთ ევრისტიკული გასაღები მისთვის
                 key = Heuristic(path.map)
                 path.key = key + path.depth
-                Queue.append(path)               
-                boardVisited.add(path.map[:])
+                # შევიტანოთ რიგის ბოლოში
+                Queue.append(path)      
+                # დახურულ სიში შევიტანოთ         
+                listClosed .add(path.map[:])
+                # თუ წვეროს მომელსაც ვამოწმებთ უფრო ღრმადაა წინაზე 
+                # გავზარდოთ მაქსიმალური სიღრმე 
                 if path.depth > MaxSearchDeep:
                     MaxSearchDeep = 1 + MaxSearchDeep
         
@@ -115,9 +130,12 @@ values_6 = [2,3,4,1,2,3,0,1,2]
 values_7 = [3,2,3,2,1,2,1,0,1]
 values_8 = [4,3,2,3,2,1,2,1,0]
 
+# A* ის დროს ვიყენებთ მანჰეტენის მანძილს როგორც მიახლოების ფუნქციას მიზნის წვერომდე.
+# ყოველი რიცხვისთვის აუროფითი ნიშნის მინიჭებით თუ რამდენი კვადრატი აშორებს მას მიზნამდე 
 def Heuristic(node):
 
-    global values_0,values_1,values_2,values_3,values_4,values_5,values_6,values_7,values_8   
+    global values_0,values_1,values_2,values_3,values_4,values_5,values_6,values_7,values_8
+
     v0=values_0[node.index("0")]
     v1=values_1[node.index("1")]
     v2=values_2[node.index("2")]
@@ -127,8 +145,9 @@ def Heuristic(node):
     v6=values_6[node.index("6")]
     v7=values_7[node.index("7")]
     v8=values_8[node.index("8")]
-    valorTotal = v0+v1+v2+v3+v4+v5+v6+v7+v8
-    return valorTotal
+
+    valofTotal = v0+v1+v2+v3+v4+v5+v6+v7+v8
+    return valofTotal
     
         
 
