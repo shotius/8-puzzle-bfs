@@ -35,25 +35,40 @@ def bfs(startState):
 
     global MaxFrontier, GoalNode, MaxSearchDeep
 
-    boardVisited= set()
+    # nanaxi simreavellebis ismravle
+    boardVisited = set()
+    # deki siwyisi mniSvnelobebisTvis
     Queue = deque([PuzzleState(startState, None, None, 0, 0, 0)])
 
+    # sanam dekidan ar amoviRebT yvela wveros
     while Queue:
+        # amoviRoT dekis pirveli elementi, mdgomarieba grafis wveroSi
         node = Queue.popleft()
+       
+        # Cavagdot es elementi nanaxi wveroebis simravleSi
         boardVisited.add(node.map)
+       
+        # Tu amoRebuli wveros mdgomareoba saboloo mdgomareobaa
+        # daabrune deki da daamTavre
         if node.state == GoalState:
             GoalNode = node
             return Queue
+
+        # SesaZlo svlebi
         posiblePaths = subNodes(node)
         for path in posiblePaths:
+            # Tu aRmoCenilebSi araa
             if path.map not in boardVisited:
+                # Caamate dekSi
                 Queue.append(path)
+                # da daamate nanax wveroebSi
                 boardVisited.add(path.map)
+                # rodes yvela SesaZlo wvero gamokvleulia `posiblePath`-dan
+                # axali shesaZlo wveroebisTvis `depth` izrdeba erTiT
+                # da Sesamabisad maqsimarul siRmesad vzrdiT
                 if path.depth > MaxSearchDeep:
                     MaxSearchDeep = MaxSearchDeep + 1
-        if len(Queue) > MaxFrontier:
-            QueueSize = len(Queue)
-            MaxFrontier = QueueSize
+
             
 #DFS**************************************************************
 def dfs(startState):
