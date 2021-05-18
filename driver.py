@@ -88,7 +88,7 @@ def ast(startState):
     Queue = []
     Queue.append(PuzzleState(startState, None, None, 0, 0, key)) 
     # დახურულ სიაში შედის საწყისი წვერო
-    listClosed .add(node1)
+    listClosed.add(node1)
     
     while Queue:
         # რიგის სორტირება ხდება ევრისტიკური ფუნქციის მნიშვნელობის მიხედვით
